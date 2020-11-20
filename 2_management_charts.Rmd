@@ -1,0 +1,178 @@
+---
+title: "Management Plan Charts"
+
+output: html_notebook
+---
+
+
+# Current Trail Condition
+
+This is where we breakdown the snapshot for the last completed survey.
+
+## Overall Health
+
+Initially, we want to understand what the overall health of the trail is. My idea is to focus on four areas; 
+* Furniture - proportion in good condition
+* Signage - proportion in good condition
+* Navigation - Route Ambiguous Issues per KM
+* Surface & Surroundings - Issues per KM
+
+### Furniture overall
+
+  
+```{r}
+
+f_chart <- 
+  filter(allrecords, QS_Group3 == "Furniture") %>%
+  group_by(RecordType) %>% 
+  summarise(Count = n()) %>% 
+  mutate(fraction = Count / max(Count)) %>% 
+  #mutate(ymax = cumsum(fraction)) %>% 
+  mutate(ymin = 0) %>% 
+  mutate(labelPosition = c(0, 0.5)) %>% 
+  mutate(label = paste0(f_chart$RecordType, "\n", f_chart$Count))
+
+ggplot()+
+  geom_rect(data = filter(f_chart, RecordType == "Furniture"), aes(ymax=fraction, ymin=ymin, xmax=4, xmin=3, fill=RecordType), fill= "grey", alpha=0.5)+
+  geom_rect(data = filter(f_chart, RecordType == "Issue"), aes(ymax=fraction, ymin=ymin, xmax=4, xmin=3, fill= RecordType), fill = "#ff0000", alpha=0.4)+
+  geom_text( x=1, aes(y=f_chart$labelPosition, label=f_chart$label), size=6) +
+  coord_polar(theta="y") + 
+  xlim(c(.2, 4)) +
+  ylim(c(0,1))+
+  theme_void() +
+  theme(legend.position = "none")
+#rm(f_chart)
+
+```
+
+### Signage Overall
+
+```{r}
+
+s_chart <- 
+  filter(allrecords, QS_Group3 == "Signs") %>%
+  group_by(RecordType) %>% 
+  summarise(Count = n()) %>% 
+  mutate(fraction = Count / max(Count)) %>% 
+  #mutate(ymax = cumsum(fraction)) %>% 
+  mutate(ymin = 0) %>% 
+  mutate(labelPosition = c(0, 0.5)) %>% 
+  mutate(label = paste0(s_chart$RecordType, "\n", s_chart$Count))
+
+ggplot()+
+  geom_rect(data = filter(s_chart, RecordType == "Furniture"), aes(ymax=fraction, ymin=ymin, xmax=4, xmin=3, fill=RecordType), fill= "grey", alpha=0.5)+
+  geom_rect(data = filter(s_chart, RecordType == "Issue"), aes(ymax=fraction, ymin=ymin, xmax=4, xmin=3, fill= RecordType), fill = "#ff0000", alpha=0.4)+
+  geom_text( x=1, aes(y=s_chart$labelPosition, label=s_chart$label), size=6) +
+  coord_polar(theta="y") + 
+  xlim(c(.2, 4)) +
+  ylim(c(0,1))+
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+### Navigation
+
+```{r}
+
+ra_chart <- 
+  filter(unresolved_issues, QS_Group3 == "Navigation") %>% 
+  group_by(QS_Group3) %>% 
+  summarise(Count = n(), Distance = max(Distance)) %>%
+  mutate(issue_per_km = Count / Distance) %>% 
+  mutate(issue_per_100m = Count / (Distance *10))
+
+ggplot()+
+  geom_rect(data = ra_chart, aes(ymax=1000, ymin=0, xmax=4, xmin=3, fill=QS_Group3), fill= "grey", alpha=0.5)+
+  geom_rect(data = ra_chart, aes(ymax=issue_per_km, ymin=0, xmax=4, xmin=3, fill= QS_Group3), fill = "#ff0000", alpha=0.4)+
+  geom_text( x=1, aes(y=0, label=paste0(ra_chart$issue_per_km, "\n Navigation Issues per KM"), size=6)) +
+  coord_polar(theta="y") + 
+  xlim(c(.2, 4)) +
+  ylim(c(0,1000))+
+  theme_void() +
+  theme(legend.position = "none")+
+  labs(title="Navigation Issues per KM")
+
+ 
+
+```
+
+### Surface Issues per KM
+
+```{r}
+
+sur_chart <- 
+  filter(unresolved_issues, QS_Group3 == "Surface and Surroundings") %>% 
+  group_by(QS_Group3) %>% 
+  summarise(Count = n(), Distance = max(Distance)) %>%
+  mutate(issue_per_km = Count / Distance) %>% 
+  mutate(issue_per_100m = Count / (Distance *10))
+
+ggplot()+
+  geom_rect(data = sur_chart, aes(ymax=1000, ymin=0, xmax=4, xmin=3, fill=QS_Group3), fill= "grey", alpha=0.5)+
+  geom_rect(data = sur_chart, aes(ymax=issue_per_km, ymin=0, xmax=4, xmin=3, fill= QS_Group3), fill = "#ff0000", alpha=0.4)+
+  geom_text( x=1, aes(y=0, label=paste0(sur_chart$issue_per_km, "\n Surface & Surroundings \n Issues per KM"), size=6)) +
+  coord_polar(theta="y") + 
+  xlim(c(.2, 4)) +
+  ylim(c(0,1000))+
+  theme_void() +
+  theme(legend.position = "none")+
+  labs(title="Surface & Surroundings Issues per KM")
+
+ 
+```
+
+
+Idea 1: Number of Unresolved Issues per KM? Conwy is 72km, so we can
+
+```{r}
+test  <- furniture %>% 
+  group_by(QS_Group1) %>% 
+  summarise(count = n())
+
+test <- mutate(test, i_per_km = count / 72)
+test1 <- as_tibble(issues)
+```
+
+
+
+## Present Furniture
+
+Start by 
+
+
+```{r}
+
+AllRecords <- rbind(select(Furniture_Present, RecordType, QS_Group1, QS_Group2), select(Issues_Unresolved, RecordType, QS_Group1, QS_Group2))
+
+AllRecordsTable <- data.frame(table(AllRecords))
+```
+
+
+```{r}
+
+AllRecordsTable <- filter(AllRecordsTable, QS_Group1 %in% c("Boardwalks", "Bridges", "Gates - Other", "Gates Kissing", "Steps - Flights", "Stiles - Ladder", "Stiles - Step", "Stiles - Stone"))
+
+
+
+  
+```
+
+```{r}
+ggplot(data = AllRecordsTable)+
+  geom_bar(mapping=aes(x=QS_Group1, y= Freq, fill = RecordType), stat = "Identity", width = 0.7, position = "fill")+
+  coord_flip()+
+  theme_minimal()+
+  scale_fill_manual("RecordType", values = c("Furniture" = "#005eb8", "Issue" = "#ffc72c"))
+  
+    scale_y_continuous(labels = scales::percent)
+
+
+```
+
+
+scale_fill_brewer(type = "qual", palette = "Dark") +
+
+
+# Trail Condition over time
+
+

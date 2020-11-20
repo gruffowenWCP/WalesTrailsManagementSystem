@@ -1,0 +1,63 @@
+---
+title: "Gruff's Trail Management Plan DataViz ideas"
+output:
+  html_notebook: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Load relevant R packages
+
+This/These packages are needed for some of the following processes.
+
+```{r}
+
+library(tidyverse)
+
+
+```
+
+# Import and prepare WTMS Data
+
+Check the WTMS CSV Directory in archive to make sure you're using the
+
+```{r}
+Issues <- read.csv("Z:/Access Recreation & Education/Access & Recreation Programmes & Projs/Wales Coast Path & National Trails/WTMS - Annual Results/WCP - 2020 - 2021/Conwy/Issues_Conwy_2020-10-09.csv")
+Furniture <-  read.csv("Z:/Access Recreation & Education/Access & Recreation Programmes & Projs/Wales Coast Path & National Trails/WTMS - Annual Results/WCP - 2020 - 2021/Conwy/Furniture_Conwy_2020-10-09.csv")
+
+```
+
+1) Furniture records which are present
+
+```{r}
+Furniture_Present <- filter(Furniture, LatestSurveyCondition != "Not Present")
+```
+
+2) Issues which are Unresolved
+
+```{r}
+
+Issues_Unresolved <- filter(Issues, StatusDesc == "Unresolved")
+
+```
+
+# Counts Chart
+
+```{r}
+
+# Histogram on a Categorical variable
+
+SS <-  filter(unresolved_issues, QS_Group2 == "SurfaceSurround") 
+
+ggplot(SS, aes(QS_Group1))+
+  geom_bar(aes(fill=PriorityDesc), width = 0.5) + 
+  theme_minimal()+
+  scale_fill_brewer(palette = "YlOrRd", direction = -1)+
+  coord_flip()+
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Number of Issues by Type and Priority", 
+       subtitle="Number of Issues by Type and Priority", legend=NULL)
+rm(SS)
+```
+
+

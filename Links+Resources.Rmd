@@ -1,0 +1,27 @@
+---
+title: "Various LInks and resources"
+output: html_notebook
+---
+
+#Graphics
+
+Poor chart and/or text quality: https://www.williamrchase.com/post/custom-fonts-and-plot-quality-with-ggplot-on-windows/
+
+# Chat with Irina
+
+- some theming packages that sit on top of ggplot
+- Knit a markdown file into an output format
+
+Suggested packages:
+- https://cran.r-project.org/web/packages/ggthemes/index.html
+- https://cran.r-project.org/web/packages/ggpubr/index.html
+
+
+## People to ask help from:
+- Irina, Henry Knowles (Github), Air Quality teams
+
+Henry tip:
+- Write tests
+- Unit tests R tools = "Dev tools" + 
+- Code looks like "Test_That" 
+- Google coding standard - a single function shouldn't be above 40 lines

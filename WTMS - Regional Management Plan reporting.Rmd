@@ -1,0 +1,81 @@
+---
+title: "WTMS - Analysis"
+output: 
+  html_notebook:
+  toc: true
+  theme: united
+---
+
+
+# Current Trail Condition
+
+In order to better understand current trail condition, we need to select the records we're interested in.
+
+1) Furniture records which is present
+
+```{r}
+Furniture_Present <- filter(Furniture, LatestSurveyCondition != "Not Present")
+```
+
+2) Issues which are Unresolved
+
+```{r}
+
+Issues_Unresolved <- filter(Issues, StatusDesc == "Unresolved")
+
+```
+
+
+## Present Furniture
+
+Start by 
+
+
+```{r}
+
+AllRecords <- rbind(select(Furniture_Present, RecordType, QS_Group1, QS_Group2), select(Issues_Unresolved, RecordType, QS_Group1, QS_Group2))
+
+AllRecordsTable <- data.frame(table(AllRecords))
+```
+
+
+```{r}
+
+AllRecordsTable <- filter(AllRecordsTable, QS_Group1 %in% c("Boardwalks", "Bridges", "Gates - Other", "Gates Kissing", "Steps - Flights", "Stiles - Ladder", "Stiles - Step", "Stiles - Stone"))
+
+
+
+  
+```
+
+```{r}
+ggplot(data = AllRecordsTable)+
+  geom_bar(mapping=aes(x=QS_Group1, y= Freq, fill = RecordType), stat = "Identity", width = 0.7, position = "fill")+
+  coord_flip()+
+  theme_minimal()+
+  scale_fill_manual("RecordType", values = c("Furniture" = "#005eb8", "Issue" = "#ffc72c"))
+  
+    scale_y_continuous(labels = scales::percent)
+
+
+```
+
+
+scale_fill_brewer(type = "qual", palette = "Dark") +
+
+
+# Trail Condition over time
+
+# Chat with Irina
+
+- some theming packages that sit on top of ggplot
+- Knit a markdown file into an output format
+
+## People to ask help from:
+- Irina, Henry Knowles (Github), Air Quality teams
+
+Henry tip:
+- Write tests
+- Unit tests R tools = "Dev tools" + 
+- Code looks like "Test_That" 
+- Google coding standard - a single function shouldn't be above 40 lines

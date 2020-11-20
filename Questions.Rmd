@@ -1,0 +1,54 @@
+---
+title: "Questions for Irina"
+author: "Gruff Owen"
+date: "17/11/2020"
+output:
+  word_document: default
+  html_document: default
+---
+
+# 1_data_import.R
+
+1. I'd like to be able to pipe straight from select into filter, so I can select relevant variables and then ditch some redundant rows in one go, but I keep getting errors. Grr! 
+
+Example code:
+
+```{r}
+Issues <- 
+  read.csv("Z:/Access Recreation & Education/Access & Recreation Programmes & Projs/Wales Coast Path & National Trails/WTMS - Annual Results/WCP - 2020 - 2021/Conwy/Issues_Conwy_2020-10-09.csv") %>% 
+
+  select( 
+    Code = IssueCode,
+    PromotedRoute,
+    ManagingAuth,
+    Region,
+    IssueType,
+    IssueTypeGroup,
+    StatusDesc,
+    PriorityDesc,
+    Complete,
+    Firm,
+    ProtrusionFree,
+    SafelySited,
+    HandpostPresent,
+    StepsInPlace,
+    SwingFreely,
+    LatchesAndBolts,
+    HorseLatch,
+    BackpackNegotiable,
+    LogoPresent,
+    OrientedCorrectly,
+    ClearlyVisible,
+    Bilingual,
+    RouteName,
+    Action,
+    DateLastUpdated,
+    PromotedRoute
+  ) %>% 
+  filter(Issues, StatusDesc != "HistoricRedundant")
+```
+
+
+2. In the "Apply Grouping Variables" section, I'm not sure whether the many to one join method is the best way to do it?
+
+3. 
